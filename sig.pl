@@ -1,4 +1,5 @@
-%SIG Automated Conflict Detection Project
+%SIG Automated Inconsistencies Detection (AID) Project
+%UTD HackReason2025
 %Bao Pham
 
 %Facts
@@ -26,8 +27,8 @@ op(use_indexing).
 op(authorize_access).
 op(identify_user).
 op(use_pin).
-op(compare_signature)
-op(require_add_id)
+op(compare_signature).
+op(require_add_id).
 op(authenticate_user).
 op(validate_access).
 
@@ -38,17 +39,21 @@ help(uncompressed_format,response_time).
 hurt(uncompressed_format,space).
 help(use_indexing,response_time).
 help(validate_access,accuracy).
-
+hurt(validate_access, response_time).
+make(authorize_access, confidentiality).
+break(require_add_id, user_friendliness).
 
 
 %SIG syntax
-goal(type) :- nfr(type).
-nfr(type) :- goal(type).
-goal(type) :- op(type).
-goal(claim) :- arg(claim).
+goal(X) :- nfr(X).
+goal(X) :- op(X).
+goal(X) :- arg(X).
 
-and_decomp(g0,[g1|gn]) :- goal(g0), and_subgoals([g1|gn]).
-or_decomp(g0,[g1|gn]) :- goal(g0), or_subgoals([g1|gn]).
+false :- and_decomp(G0,[]).
+and_decomp(G0,G1) :- and_decomp(G0,Gn).
+
+false :- or_decomp(G0,[]).
+or_decomp(G0,G1) :- or_decomp(G0,Gn).
 
 
 contribution(X,Y) :- help(X,Y).
@@ -73,7 +78,7 @@ neg_contribution(X,Y) :- break(X,Y).
 %Rules for syntax error and conflict detection.
 
 % A goal cannot be an NFR softgoal, an operationalization softgoal or a claim softgoal at the same time.
-false :- nfr(X), op(X).
+%false :- nfr(X), op(X).
 % A goal that has a positive contribution to a goal, 
 % and has a negative contribution to another goal.
 side_effect(X) :- pos_contribution(X,_), neg_contribution(X,_).
