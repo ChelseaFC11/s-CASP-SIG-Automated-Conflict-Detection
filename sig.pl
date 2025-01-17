@@ -3,8 +3,6 @@
 %Bao Pham
 
 %Facts
-topic(accounts).
-
 nfr(security).
 nfr(performance).
 nfr(user_friendliness).
@@ -43,8 +41,9 @@ hurt(validate_access, response_time).
 make(authorize_access, confidentiality).
 break(require_add_id, user_friendliness).
 
+topic(accounts).
 
-%SIG syntax
+%SIG semantic definition
 goal(X) :- nfr(X).
 goal(X) :- op(X).
 goal(X) :- arg(X).
@@ -56,10 +55,8 @@ false :- or_decomp(G0,[]).
 or_decomp(G0,G1) :- or_decomp(G0,Gn).
 
 
-contribution(X,Y) :- help(X,Y).
-contribution(X,Y) :- hurt(X,Y).
-contribution(X,Y) :- make(X,Y).
-contribution(X,Y) :- break(X,Y).
+contribution(X,Y) :- pos_contribution(X,Y).
+contribution(X,Y) :- neg_contribution(X,Y).
 contribution(X,Y) :- unknown(X,Y).
 
 
@@ -75,7 +72,7 @@ pos_contribution(X,Y) :- make(X,Y).
 neg_contribution(X,Y) :- hurt(X,Y).
 neg_contribution(X,Y) :- break(X,Y).
 
-%Rules for syntax error and conflict detection.
+%Rules for inconsistencies detection.
 
 % A goal cannot be an NFR softgoal, an operationalization softgoal or a claim softgoal at the same time.
 %false :- nfr(X), op(X).
@@ -85,3 +82,9 @@ side_effect(X) :- pos_contribution(X,_), neg_contribution(X,_).
 
 % A goal that has both positive and negative contributions from other goals.
 conflict(X) :- pos_contribution(_,X), neg_contribution(_,X).
+
+%Example queries:
+%help(space,X).
+%and_decomp(X,Y).
+%side_effect(X).
+%conflict(X).
