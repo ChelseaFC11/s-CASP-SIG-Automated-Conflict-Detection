@@ -3,22 +3,43 @@
 
 %Facts
 topic(accounts).
+
 nfr(security).
 nfr(performance).
 nfr(user_friendliness).
-op(security).
+nfr(confidentiality).
+nfr(integrity).
+nfr(availability).
+nfr(completeness).
+nfr(accuracy).
+nfr(space).
+nfr(response_time).
 
 
 and_decomp(security,[confidentiality,integrity,availability]).
 and_decomp(integrity,[completeness,accuracy]).
 and_decomp(performance,[space,response_time]).
 
+
 op(uncompressed_format).
 op(use_indexing).
+op(authorize_access).
+op(identify_user).
+op(use_pin).
+op(compare_signature)
+op(require_add_id)
+op(authenticate_user).
 op(validate_access).
+
+and_decomp(authorize_access, [validate_access,identify_user,authenticate_user]).
+or_decomp(authenticate_user, [use_pin, compare_signature, require_add_id]).
 
 help(uncompressed_format,response_time).
 hurt(uncompressed_format,space).
+help(use_indexing,response_time).
+help(validate_access,accuracy).
+
+
 
 %SIG syntax
 goal(type) :- nfr(type).
@@ -34,6 +55,7 @@ contribution(X,Y) :- help(X,Y).
 contribution(X,Y) :- hurt(X,Y).
 contribution(X,Y) :- make(X,Y).
 contribution(X,Y) :- break(X,Y).
+contribution(X,Y) :- unknown(X,Y).
 
 
 
@@ -52,7 +74,6 @@ neg_contribution(X,Y) :- break(X,Y).
 
 % A goal cannot be an NFR softgoal, an operationalization softgoal or a claim softgoal at the same time.
 false :- nfr(X), op(X).
-
 % A goal that has a positive contribution to a goal, 
 % and has a negative contribution to another goal.
 side_effect(X) :- pos_contribution(X,_), neg_contribution(X,_).
